@@ -16,7 +16,7 @@ session_start();
 // Comprobamos si la variable existe o no
 if (!isset($_SESSION['stock'])) {
     $_SESSION['stock'] = 0;
-    $_SESSION['cart'] = array();
+    $_SESSION['trolley'] = array();
 }
 ?>
 <!-- HTML BASICO -->
@@ -32,7 +32,7 @@ if (!isset($_SESSION['stock'])) {
 
 <body>
     <h2>Tienda de Airam</h2>
-    <form action="cart.php" method="get">
+    <form action="trolley.php" method="get">
         <button type="submit">Ver Carrito</button>
     </form>
     <form action="logout.php" method="post">
@@ -92,7 +92,7 @@ if (!isset($_SESSION['stock'])) {
                         <input type="hidden" name="product_id" value="<?= $id ?>">
                         <td>
                             <!-- Usamos el utf8icons para poner el icono de un carrito -->
-                            <button type="submit" name="add_cart_button">&#128722;</button>
+                            <button type="submit" name="add_trolley_button">&#128722;</button>
                         </td>
                     </form>
                     <?php
@@ -103,11 +103,11 @@ if (!isset($_SESSION['stock'])) {
                 }
                 $result->close();
             }
-            if (isset($_POST['add_cart_button'])) {
+            if (isset($_POST['add_trolley_button'])) {
                 subtract($_POST['product_id']);
             }
             // La función subtract resta uno del stock y 
-            // luego llama a la función addCart para añadir el producto al carrito
+            // luego llama a la función addTrolley para añadir el producto al carrito
             function subtract($product_id) {
                 require "connection.php";
                 include "top.php";
@@ -124,23 +124,23 @@ if (!isset($_SESSION['stock'])) {
                         $sql2 = "UPDATE products SET amount = amount -1 WHERE id=$product_id";
                         $result = $link->query($sql2);
                         echo "<p class='success'>Se ha añadido al carrito de la compra el producto con id $product_id</p>";
-                        addCart($_POST['product_id']);
+                        addTrolley($_POST['product_id']);
                     } else {
                         echo "<p class='error'>No hay stock suficiente del producto con id $product_id</p>";
                     }
                 }
             }
-            // addCart aumenta la cantidad del producto en el carrito.
-            function addCart($product_id) {
+            // addTrolley aumenta la cantidad del producto en el carrito.
+            function addTrolley($product_id) {
                 $_SESSION['stock']++;
-                if (!isset($_SESSION['cart'])) {
-                    $_SESSION['cart'] = array();
+                if (!isset($_SESSION['trolley'])) {
+                    $_SESSION['trolley'] = array();
                 }
                 // Aumenta la cantidad
-                if (isset($_SESSION['cart'][$product_id])) {
-                    $_SESSION['cart'][$product_id]++;
+                if (isset($_SESSION['trolley'][$product_id])) {
+                    $_SESSION['trolley'][$product_id]++;
                 } else {
-                    $_SESSION['cart'][$product_id] = 1;
+                    $_SESSION['trolley'][$product_id] = 1;
                 }
             }
 ?>

@@ -34,23 +34,23 @@
 
 
     <form method="post" action="">
-        <button type="submit" name="empty_cart">Vaciar carrito</button>
+        <button type="submit" name="empty_trolley">Vaciar carrito</button>
     </form>
 
     <?php
-    if (isset($_POST['empty_cart'])) {
+    if (isset($_POST['empty_trolley'])) {
         // Llama a la función para vaciar el carrito
-        emptyCart($link);
+        emptytrolley($link);
     }
 
     // Función para vaciar el carrito
-    function emptyCart($link) {
-        if (!isset($_SESSION['cart'])) {
+    function emptytrolley($link) {
+        if (!isset($_SESSION['trolley'])) {
             return; // No se hace nada 
         }
 
         // Obtenemos la cantidad de producto antes de vaciar
-        foreach ($_SESSION['cart'] as $product_id => $quantity) {
+        foreach ($_SESSION['trolley'] as $product_id => $quantity) {
             // Sumamos cantidad + stock en la BD
             $sql = "UPDATE products SET amount = amount + ? WHERE id = ?";
             $stm = $link->prepare($sql);
@@ -60,7 +60,7 @@
         }
 
         // Elimina la sesión
-        unset($_SESSION['cart']);
+        unset($_SESSION['trolley']);
         // Reinicia el contador
         $_SESSION['stock'] = 0;
         // Redirige a la misma página para evitar problemas con el formulario al recargar
@@ -90,7 +90,7 @@
                     <th></th>
                 </tr>';
 
-        foreach ($_SESSION["cart"] as $product_id => $quantity) {
+        foreach ($_SESSION["trolley"] as $product_id => $quantity) {
             $sql = "SELECT * FROM products WHERE id=?";
             $stm = $link->prepare($sql);
             $stm->bind_param("i", $product_id);
@@ -158,14 +158,14 @@
                 $currentQuantity = $_POST["current_quantity"];
 
                 // Si la cantidad del carrito es mayor que 0
-                if (isset($_SESSION["cart"][$productId]) && $_SESSION["cart"][$productId] > 0) {
+                if (isset($_SESSION["trolley"][$productId]) && $_SESSION["trolley"][$productId] > 0) {
                     // Se resta uno a la cantidad del producto en el carrito
-                    $_SESSION["cart"][$productId] = $currentQuantity - 1;
+                    $_SESSION["trolley"][$productId] = $currentQuantity - 1;
 
                     // Si llega a 0
-                    if ($_SESSION["cart"][$productId] == 0) {
+                    if ($_SESSION["trolley"][$productId] == 0) {
                         // Se borra del carrito
-                        unset($_SESSION["cart"][$productId]);
+                        unset($_SESSION["trolley"][$productId]);
                     }
 
                     // Redirige a la misma página para evitar problemas con el formulario al recargar
@@ -199,7 +199,7 @@
 
                 $productId = $_POST["product_id"];
                 $currentQuantity = $_POST["current_quantity"];
-                $_SESSION["cart"][$productId] = $currentQuantity + 1;
+                $_SESSION["trolley"][$productId] = $currentQuantity + 1;
 
                 // Redirige a la misma página para evitar problemas con el formulario al recargar
                 // header("Location: {$_SERVER['PHP_SELF']}");
@@ -210,8 +210,8 @@
         }
     }
     // Vaciar el carrito 
-    if (empty($_SESSION["cart"])) {
-        emptyCart($link);
+    if (empty($_SESSION["trolley"])) {
+        emptytrolley($link);
     }
     ?>
 </body>
